@@ -162,11 +162,7 @@ RUN apk add --no-cache --virtual .build-deps \
         nginx-upstream-fair-0.1.3.tar.gz \
     && apk del .build-deps \
     && mkdir -p /var/run/openresty \
-    && mkdir -p /usr/local/openresty/nginx/conf/conf.d/ssl \
     && mkdir -p /usr/local/openresty/nginx/cache \
-    && ln -sf /dev/stdout /usr/local/openresty/nginx/logs/access.log \
-    && ln -sf /dev/stderr /usr/local/openresty/nginx/logs/error.log
-
     RUN cd /usr/local/openresty/nginx/ \
     && apk add --no-cache openssl openssl-dev \ 
     && openssl req -newkey rsa:4096 \
