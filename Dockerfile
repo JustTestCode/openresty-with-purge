@@ -10,13 +10,13 @@ LABEL maintainer="Evan Wies <evan@neomantra.net>"
 
 # Docker Build Arguments
 ARG RESTY_IMAGE_BASE="alpine"
-ARG RESTY_IMAGE_TAG="3.14"
-ARG RESTY_VERSION="1.19.9.1"
-ARG RESTY_OPENSSL_VERSION="1.1.1l"
+ARG RESTY_IMAGE_TAG="3.16"
+ARG RESTY_VERSION="1.21.4.1"
+ARG RESTY_OPENSSL_VERSION="1.1.1p"
 ARG RESTY_OPENSSL_PATCH_VERSION="1.1.1f"
 ARG RESTY_OPENSSL_URL_BASE="https://www.openssl.org/source"
-ARG RESTY_PCRE_VERSION="8.44"
-ARG RESTY_PCRE_SHA256="aecafd4af3bd0f3935721af77b889d9024b2e01d96b58471bd91a3063fb47728"
+ARG RESTY_PCRE_VERSION="8.45"
+ARG RESTY_PCRE_SHA256="4e6ce03e0336e8b4a3d6c2b70b1c5e18590a5673a98186da90d4f33c23defc09"
 ARG RESTY_J="1"
 ARG RESTY_CONFIG_OPTIONS="\
     --with-compat \
@@ -163,21 +163,15 @@ RUN apk add --no-cache --virtual .build-deps \
     && apk del .build-deps \
     && mkdir -p /var/run/openresty \
     && mkdir -p /usr/local/openresty/nginx/cache \
-    RUN cd /usr/local/openresty/nginx/ \
-    && apk add --no-cache openssl openssl-dev \ 
-    && openssl req -newkey rsa:4096 \
-                -x509 \
-                -sha256 \
-                -days 365000 \
-                -nodes \
-                -out nginx.crt \
-                -keyout nginx.key \
-                -subj "/C=SI/ST=USA/L=USA/O=Security/OU=IT Department/CN=sg.com"
+    && ln -sf /dev/stdout /usr/local/openresty/nginx/logs/access.log \
+    && ln -sf /dev/stderr /usr/local/openresty/nginx/logs/error.log
 # Add additional binaries into PATH for convenience
 ENV PATH=$PATH:/usr/local/openresty/luajit/bin:/usr/local/openresty/nginx/sbin:/usr/local/openresty/bin
 
 # Copy nginx configuration files
 COPY config/nginx.conf /usr/local/openresty/nginx/conf/nginx.conf
+COPY config/default.crt /usr/local/openresty/nginx/conf/default.crt
+COPY config/default.key /usr/local/openresty/nginx/conf/default.key
 #COPY nginx.vh.default.conf /etc/nginx/conf.d/default.conf
 VOLUME /usr/local/openresty/nginx
 EXPOSE 80 443
